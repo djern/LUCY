@@ -6,25 +6,23 @@ import java.io.InputStreamReader;
 
 import app.com.hardware.ControllerHW;
 import app.com.hue.ControllerHue;
+import app.com.voice.TextToVoice;
 
 public class DebugApp {
 	private static ControllerHue controllerHue;
 	private static ControllerHW controllerHW;
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		System.out.println("Starting Debug-App...\n");
 
-		System.out.println("Step 1/4: Creating  Hue-Controller");
+		System.out.println("Step 1/3: Creating  Hue-Controller");
 		controllerHue = new ControllerHue();
 		
-		System.out.println("Step 2/4: Creating  HW-Controller");
+		System.out.println("Step 2/3: Creating  HW-Controller");
 		controllerHW = new ControllerHW();
 		
-		System.out.println("Step 3/4: Loading last bridge-IP...\n");
+		System.out.println("Step 3/3: Loading last bridge-IP...\n");
 		System.out.println("Last bridge: "+ controllerHue.getLastIP());
-
-		System.out.println("Step 4/4: Searching for bridges...\n");
-		controllerHue.startSearching();
 		
 		//Steuerung
 		int menu = 0;
@@ -35,7 +33,7 @@ public class DebugApp {
 			if(menu == 0) {
 			    System.out.println("######################");
 			    System.out.println("Select: ");
-				System.out.println("1: Stop Search");
+				System.out.println("1: Start Search");
 				System.out.println("2: Connect to Bridge (new IP)");
 				System.out.println("3: Connect to Bridge (last IP)");
 				System.out.println("4: Load all Lights");
@@ -47,7 +45,7 @@ public class DebugApp {
 			    
 			    switch(choice) {
 			    	case 1: 
-		    			controllerHue.stopSearching();
+		    			controllerHue.startSearching();
 		    			break;
 			    	case 2: 
 		    			System.out.println("Enter bridge-IP...");
@@ -76,7 +74,11 @@ public class DebugApp {
 			    			System.out.println("Err: No bridge connected.");
 		    			break;
 			    	case 6: 
-		    				menu = 3;
+		    			menu = 3;
+		    			break;
+			    	case 7: 
+		    			TextToVoice tts =  new TextToVoice();
+		    			tts.playFile();// readText("Hallo ich bin Lucy!");
 		    			break;
 			    	case 0: 
 	    				return;

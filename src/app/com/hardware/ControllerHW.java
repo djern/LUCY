@@ -5,7 +5,7 @@ import java.io.IOException;
 public class ControllerHW {
 	MicroHandler handlerMicro;
 	
-	public ControllerHW() {
+	public ControllerHW() throws IOException {
 		handlerMicro = new MicroHandler();
 	}
 	

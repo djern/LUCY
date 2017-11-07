@@ -5,11 +5,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
+
+import app.com.voice.VoiceToText;
+import be.tarsos.dsp.io.TarsosDSPAudioFloatConverter;
+import be.tarsos.dsp.io.TarsosDSPAudioFormat;
 
 public class MicroHandler {
 
@@ -18,19 +23,28 @@ public class MicroHandler {
 	byte[] tempData;
 	Path file_save;
 	Path file_toText;
-	MicroRecorder recording;
+	Runnable recorder;
+	double threshold = -71;
+	boolean microActive;
+	boolean speaking = false;
+	boolean speaking_before = false;
 	AudioFormat format;
 	DataLine.Info targetInfo;
 	DataLine.Info sourceInfo;
 	TargetDataLine targetLine;
 	SourceDataLine sourceLine;
+	SpeechDetector speechDetector;
+	VoiceToText translator;
+	AudioFormat.Encoding encoding = AudioFormat.Encoding.PCM_SIGNED;
 	
-	public MicroHandler() {
-		format = new AudioFormat(16000, 16, 2, true, true);
+	public MicroHandler() throws IOException {
+		format = new AudioFormat(16000, 16, 1, true, false);
 		targetInfo = new DataLine.Info(TargetDataLine.class, format);
 		sourceInfo = new DataLine.Info(SourceDataLine.class, format);
 		file_save = Paths.get("./resources/micro_save.pcm");
 		file_toText = Paths.get("./resources/toText.pcm");
+		speechDetector = new SpeechDetector(threshold);
+		translator = new VoiceToText();
 
 		try {
 			targetLine = (TargetDataLine) AudioSystem.getLine(targetInfo);
@@ -45,17 +59,48 @@ public class MicroHandler {
 			System.err.println(e);
 		}
 		
-		recording = new MicroRecorder(targetLine, targetData, file_save);
+		recorder = new Runnable() {
+			@Override
+			public void run() {
+				microActive = true;
+				try {
+					Files.write(file_save, new byte[0]);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				while (microActive == true) {
+					targetLine.read(targetData, 0, targetData.length);
+					
+					speaking = speechDetector.checkIfSpeaking(targetData);
+					try {
+						if(speaking) {
+							Files.write(file_save, targetData, StandardOpenOption.APPEND);
+						}
+						else if(speaking == false && speaking_before == true) {
+							Files.copy(file_save, file_toText, StandardCopyOption.REPLACE_EXISTING);
+							Files.write(file_save, new byte[0]);
+							System.out.println("DETECTED: End of Sentence (" + speechDetector.getDurationInSec() + ")");
+							if(speechDetector.getDurationInSec() > 1.20)
+								translator.translate("./resources/toText.pcm");
+						}		
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					speaking_before = speaking;
+				}
+			}
+		};
 	}
 
 	public void startMicro() throws IOException {
 		targetLine.start();
-		recording.run();
+		new Thread(recorder).start();
 	}
 
 	public void stopMicro() throws IOException {
+		microActive = false;
 		targetLine.stop();
-		Files.copy(file_save, file_toText, StandardCopyOption.REPLACE_EXISTING);
 	}
 	
 	public void playRecord() throws IOException {
@@ -64,21 +109,4 @@ public class MicroHandler {
 		sourceLine.write(tempData, 0, tempData.length);
 		sourceLine.stop();		
 	}
-	public static int calculateRMSLevel(byte[] audioData)
-	{ 
-	    long lSum = 0;
-	    for(int i=0; i < audioData.length; i++)
-	        lSum = lSum + audioData[i];
-
-	    double dAvg = lSum / audioData.length;
-	    double sumMeanSquare = 0d;
-
-	    for(int j=0; j < audioData.length; j++)
-	        sumMeanSquare += Math.pow(audioData[j] - dAvg, 2d);
-
-	    double averageMeanSquare = sumMeanSquare / audioData.length;
-
-	    return (int)(Math.pow(averageMeanSquare,0.5d) + 0.5);
-	}
-
 }
