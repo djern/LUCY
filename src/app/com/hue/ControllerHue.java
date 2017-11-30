@@ -5,6 +5,9 @@ import java.util.List;
 import com.philips.lighting.hue.sdk.wrapper.HueLog;
 import com.philips.lighting.hue.sdk.wrapper.Persistence;
 import com.philips.lighting.hue.sdk.wrapper.domain.device.sensor.CompoundSensor;
+import com.philips.lighting.hue.sdk.wrapper.domain.resource.Scene;
+
+import app.gui.Config;
 
 public class ControllerHue {
 
@@ -17,8 +20,9 @@ public class ControllerHue {
 	public ControllerHue() {
 		System.loadLibrary("huesdk");
 		handlerBridge = new BridgeHandler();
-		Persistence.setStorageLocation("C:/Users/Tobi/Desktop/LUCY/HueSDK/1.21/HueSDK/Windows", "Lucy");
+		Persistence.setStorageLocation(Config.SYSTEM_HUE_PERSISTENCE, "Lucy");
         HueLog.setConsoleLogLevel(HueLog.LogLevel.INFO);
+        connectBridge(getLastIP());
 	}
 
 	public String getLastIP() {
@@ -65,6 +69,10 @@ public class ControllerHue {
 	private void reloadLight() {
 		handlerLight.setLight(handlerBridge.getLight(lightID));
 	}
+	
+	public void getType() {
+		handlerLight.getType();
+	}
 
 	public boolean getLightStatus() {
 		reloadLight();
@@ -82,6 +90,10 @@ public class ControllerHue {
 	
 	public void setLightBright(int bright) {
 		handlerLight.setBrightness(bright);
+	}
+
+	public void setColor(int r, int g, int b) {
+		handlerLight.setColor(r, g, b);		
 	}
 	
 	// ------------------ End LIGHTS ------------------ //
@@ -112,4 +124,18 @@ public class ControllerHue {
 		handlerSensor.loadSubSensors();
 	}
 	// ----------------- End SENSORS ----------------- //
+
+	// ---------------- Start SCENES ---------------- //
+	
+	public void printAllScenes() {
+		List <Scene> allScenes = handlerBridge.loadScenes();
+		for (Scene scene : allScenes) {
+			System.out.print("Name: " + scene.getName());
+			System.out.println(" - Ident: " + scene.getIdentifier());
+		}
+	}
+	
+	public void setScene(String ident) {
+		handlerBridge.setScene(ident);
+	}
 }

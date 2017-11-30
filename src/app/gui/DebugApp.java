@@ -1,8 +1,10 @@
 package app.gui;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URL;
 
 import app.com.hardware.ControllerHW;
 import app.com.hue.ControllerHue;
@@ -11,17 +13,18 @@ import app.com.voice.TextToVoice;
 public class DebugApp {
 	private static ControllerHue controllerHue;
 	private static ControllerHW controllerHW;
+	private static TextToVoice tts;
 
 	public static void main(String[] args) throws Exception {
 		System.out.println("Starting Debug-App...\n");
 
-		System.out.println("Step 1/3: Creating  Hue-Controller");
+		System.out.println("Step 1/4: Creating  Hue-Controller");
 		controllerHue = new ControllerHue();
-		
-		System.out.println("Step 2/3: Creating  HW-Controller");
+				
+		System.out.println("Step 3/4: Creating  HW-Controller");
 		controllerHW = new ControllerHW();
 		
-		System.out.println("Step 3/3: Loading last bridge-IP...\n");
+		System.out.println("Step 4/4: Loading last bridge-IP...\n");
 		System.out.println("Last bridge: "+ controllerHue.getLastIP());
 		
 		//Steuerung
@@ -33,27 +36,30 @@ public class DebugApp {
 			if(menu == 0) {
 			    System.out.println("######################");
 			    System.out.println("Select: ");
-				System.out.println("1: Start Search");
-				System.out.println("2: Connect to Bridge (new IP)");
-				System.out.println("3: Connect to Bridge (last IP)");
+				System.out.println("1: Connect to Bridge (new IP)");
+				System.out.println("2: Connect to Bridge (last IP)");
+				System.out.println("3: Search Bridges");
 				System.out.println("4: Load all Lights");
 				System.out.println("5: Load all Sensors");
 				System.out.println("6: Micro");
+				System.out.println("7: TTS");
+				System.out.println("8: Play OGG");
+				System.out.println("9: RUN LUCY");
 				System.out.println("0: End Programm");
 				System.out.println("######################\n");
 			    choice = Integer.parseInt(getUserInput());
 			    
 			    switch(choice) {
 			    	case 1: 
-		    			controllerHue.startSearching();
-		    			break;
-			    	case 2: 
 		    			System.out.println("Enter bridge-IP...");
 		    			input = getUserInput();
 		    			controllerHue.connectBridge(input);
 		    			break;
-			    	case 3: 
+			    	case 2: 
 		    			controllerHue.connectBridge(controllerHue.getLastIP());
+		    			break;
+			    	case 3: 
+		    			controllerHue.startSearching();
 		    			break;
 			    	case 4: 
 		    			if(controllerHue.checkBridgeStatus()) {
@@ -77,8 +83,22 @@ public class DebugApp {
 		    			menu = 3;
 		    			break;
 			    	case 7: 
-		    			TextToVoice tts =  new TextToVoice();
-		    			tts.playFile();// readText("Hallo ich bin Lucy!");
+		    			tts =  new TextToVoice();
+		    			System.out.println("Enter Text...");
+		    			input = getUserInput();
+		    			tts.runTTV(input);
+		    			break;
+			    	case 8: 
+		    			tts =  new TextToVoice();
+		    			System.out.println("Enter Sound-ID...");
+		    			input = getUserInput();
+		    			File file = new File("./resources/sounds/lucy_" + input + ".ogg");
+		    			URL url = file.toURI().toURL();
+		    			tts.playSound(url.toString());
+		    			break;
+			    	case 9: 
+			    		System.out.println("Starting Record");
+		    			controllerHW.startRecord();
 		    			break;
 			    	case 0: 
 	    				return;
@@ -92,6 +112,8 @@ public class DebugApp {
 				System.out.println("3: Set Status");
 				System.out.println("4: Get Brightness");
 				System.out.println("5: Set Brightness");
+				System.out.println("6: Get Type");
+				System.out.println("7: Get Scenes");
 				System.out.println("0: Back");
 				System.out.println("######################\n");
 			    choice = Integer.parseInt(getUserInput());
@@ -125,6 +147,12 @@ public class DebugApp {
 			    		System.out.println("What brightness?");
 			    		input = getUserInput();
 			    		controllerHue.setLightBright(Integer.parseInt(input));
+		    			break;
+			    	case 6: 
+		    			controllerHue.getType();
+		    			break;
+			    	case 7: 
+		    			controllerHue.printAllScenes();
 		    			break;
 			    	case 0: 
 	    				menu = 0;

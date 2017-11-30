@@ -2,6 +2,7 @@ package app.com.hue;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import com.philips.lighting.hue.sdk.wrapper.connection.BridgeConnection;
@@ -17,13 +18,19 @@ import com.philips.lighting.hue.sdk.wrapper.discovery.BridgeDiscoveryCallback;
 import com.philips.lighting.hue.sdk.wrapper.discovery.BridgeDiscoveryResult;
 import com.philips.lighting.hue.sdk.wrapper.domain.ReturnCode;
 import com.philips.lighting.hue.sdk.wrapper.domain.device.light.LightPoint;
+import com.philips.lighting.hue.sdk.wrapper.domain.device.sensor.CompoundSensor;
 import com.philips.lighting.hue.sdk.wrapper.domain.device.sensor.Sensor;
+import com.philips.lighting.hue.sdk.wrapper.domain.device.sensor.presence.PresenceSensor;
+import com.philips.lighting.hue.sdk.wrapper.domain.resource.Scene;
 import com.philips.lighting.hue.sdk.wrapper.domain.Bridge;
 import com.philips.lighting.hue.sdk.wrapper.domain.BridgeBuilder;
 import com.philips.lighting.hue.sdk.wrapper.domain.BridgeState;
+import com.philips.lighting.hue.sdk.wrapper.domain.DomainType;
 import com.philips.lighting.hue.sdk.wrapper.domain.HueError;
 import com.philips.lighting.hue.sdk.wrapper.knownbridges.KnownBridge;
 import com.philips.lighting.hue.sdk.wrapper.knownbridges.KnownBridges;
+
+import app.gui.Config;
 
 public class BridgeHandler {
 	
@@ -36,7 +43,9 @@ public class BridgeHandler {
 	@SuppressWarnings("unused")
 	private List<BridgeDiscoveryResult> bridgeDiscoveryResults;
 	private BridgeStateUpdatedCallback bridgeStateUpdatedCallback;
-		
+	
+	public Date lastTriggerSZ = null;
+	
 	public BridgeHandler() {
 		startCallbacks();	
 	}
@@ -87,7 +96,7 @@ public class BridgeHandler {
     /**
      * Use the BridgeBuilder to create a bridge instance and connect to it
      */
-	public void connectToBridge(String bridgeIp) {
+	public ReturnCode connectToBridge(String bridgeIp) {
         stopBridgeDiscovery();
         disconnectFromBridge();
 
@@ -99,7 +108,7 @@ public class BridgeHandler {
                 .build();
 
         System.out.println("Connecting to bridge (" + bridgeIp + ")...");
-        bridge.connect();
+        return bridge.connect();
     }
 
     /**
@@ -219,6 +228,7 @@ public class BridgeHandler {
                     	break;
                     case SENSORS_AND_SWITCHES:
                     	loadBrigde();
+                    	checkListeningTrigger();
                     	break;
                     default:
                         break;
@@ -226,7 +236,17 @@ public class BridgeHandler {
             }
         };
     }
-
+	
+	private void checkListeningTrigger() {
+		CompoundSensor sensorSZ = (CompoundSensor) getSensor(Config.SENSORS_HUE_SZ_TRIGGER);
+		PresenceSensor sensorPres = (PresenceSensor) sensorSZ.getDevices(DomainType.PRESENCE_SENSOR).get(0);
+		lastTriggerSZ = sensorPres.getState().getLastUpdated();
+	}
+	
+	public Date getLastTriggerSZ() {
+		return lastTriggerSZ;
+	}
+	
 	public boolean getStatus() {
 		if (bridge == null)
 			return false;
@@ -237,7 +257,7 @@ public class BridgeHandler {
 	public void loadBrigde() {
 		bridgeState = bridge.getBridgeState();
 	}
-	
+		
 	public List<LightPoint> loadLights() {
 		return bridgeState.getLightPoints();
 	}
@@ -252,5 +272,19 @@ public class BridgeHandler {
 	
 	public Sensor getSensor(String id) {
 		return bridgeState.getSensor(id);
+	}
+	
+	public List<Scene> loadScenes() {
+		return bridgeState.getScenes();
+	}
+
+	public Scene getScene(String ident) {
+		return bridgeState.getScene(ident);
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void setScene(String ident) {
+		getScene(ident).setIsActive(true);
+		bridge.updateState(bridgeState);
 	}
 }

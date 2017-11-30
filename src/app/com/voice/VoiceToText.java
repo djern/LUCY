@@ -16,11 +16,16 @@ import com.google.cloud.speech.v1.SpeechRecognitionAlternative;
 import com.google.cloud.speech.v1.SpeechRecognitionResult;
 import com.google.protobuf.ByteString;
 
+import app.smart.KeywordLogic;
+
 public class VoiceToText {
 	
 	static SpeechClient speech;
+	private KeywordLogic logic;
 	
 	public VoiceToText() throws IOException {
+		System.out.println("Creating KeywordLogic");
+		logic = new KeywordLogic();
 	}
 	
 	public void translate(String fileName) throws Exception, IOException {
@@ -34,7 +39,7 @@ public class VoiceToText {
 
 	    SpeechContext.Builder context = SpeechContext.newBuilder();
 	    context.addPhrases("Lucy");
-	    
+	    context.addPhrases("Licht");
 	    // Builds the sync recognize request
 	    RecognitionConfig config = RecognitionConfig.newBuilder()
 	        .setEncoding(AudioEncoding.LINEAR16)
@@ -49,12 +54,13 @@ public class VoiceToText {
 	    // Performs speech recognition on the audio file
 	    RecognizeResponse response = speech.recognize(config, audio);
 	    List<SpeechRecognitionResult> results = response.getResultsList();
-	    System.out.println("Results found:" + results.size());
+//	    System.out.println("Results found:" + results.size());
 	    for (SpeechRecognitionResult result: results) {
 	      // There can be several alternative transcripts for a given chunk of speech. Just use the
 	      // first (most likely) one here.
 	      SpeechRecognitionAlternative alternative = result.getAlternativesList().get(0);
-	      System.out.printf("Transcription: %s%n", alternative.getTranscript());
+//	      System.out.printf("Transcription: %s%n", alternative.getTranscript());
+	      logic.parseInput(alternative.getTranscript());
 	    }
 	    speech.close();
 	}

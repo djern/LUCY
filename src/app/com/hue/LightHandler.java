@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.philips.lighting.hue.sdk.wrapper.domain.device.light.LightPoint;
 import com.philips.lighting.hue.sdk.wrapper.domain.device.light.LightState;
+import com.philips.lighting.hue.sdk.wrapper.utilities.HueColor;
+import com.philips.lighting.hue.sdk.wrapper.utilities.HueColor.RGB;
 
 public class LightHandler {
 
@@ -38,6 +40,10 @@ public class LightHandler {
 		this.light = light;
 	}
 	
+	public void getType() {
+		System.out.println(light.getLightType());
+	}
+	
 	public boolean getStatus() {
 		return light.getLightState().isOn();
 	}
@@ -49,13 +55,20 @@ public class LightHandler {
 	}
 
 	public int getBrightness() {
-		LightState state =  light.getLightState();
-		return state.getBrightness();
+		return light.getLightState().getBrightness();
 	}
 
 	public void setBrightness(int bright) {
 		LightState state =  light.getLightState();
 		state.setBrightness(bright);
+		light.updateState(state);
+	}
+	
+	public void setColor(int r, int g, int b) {
+		RGB rgb = new RGB(r, g, b);
+		HueColor color = new HueColor (rgb, light.getConfiguration().getModelIdentifier(), light.getConfiguration().getSwVersion());
+		LightState state =  light.getLightState();
+		state.setXYWithColor(color);
 		light.updateState(state);
 	}
 }

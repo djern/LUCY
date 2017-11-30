@@ -11,21 +11,16 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Tobi/Desktop/LUCY/HueSDK/1.21/HueSDK/Windows/huecppsdk-wrapper.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/C:/Users/Tobi/Desktop/LUCY/HueSDK/1.21/HueSDK/Windows/huecppsdk-wrapper-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Tobi/Desktop/LUCY/TarsosDSP/TarsosDSP-2.4.jar">
+	<classpathentry kind="src" output="target/classes" path="target/generated-sources/wsimport">
 		<attributes>
-			<attribute name="javadoc_location" value="https://0110.be/releases/TarsosDSP/TarsosDSP-2.4/TarsosDSP-2.4-Documentation/"/>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Tobi/Desktop/LUCY/TTS_Import"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions 
+   name="CereVoice"
+   targetNamespace="https://cerevoice.com/soap/cloudservice.wsdl"
+   xmlns:tns="https://cerevoice.com/soap/cloudservice.wsdl" 
+   xmlns:types="https://cerevoice.com/soap/cloudschema"
+   xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+   xmlns="http://schemas.xmlsoap.org/wsdl/">
+  
+  <types>
+    <xsd:schema><!-- xmlns:xsd="http://www.w3.org/2001/XMLSchema">-->
+      <xsd:import namespace="https://cerevoice.com/soap/cloudschema" schemaLocation="cloudschema.xsd" />
+    </xsd:schema>
+  </types>
+  
+  <!-- SPEAK -->
+  <message name="speakSimpleRequest">
+    <part name="accountID" type="xsd:string" />
+    <part name="password" type="xsd:string" />
+    <part name="voice" type="xsd:string" />
+    <part name="text" type="xsd:string" />
+  </message>
+  <message name="speakSimpleResponse">
+    <part name="fileUrl" type="xsd:string" />
+    <part name="charCount" type="xsd:int" />
+    <part name="resultCode" type="xsd:int" />
+    <part name="resultDescription" type="xsd:string" />
+  </message>
+
+  <!-- SPEAK EXTENDED -->
+  <message name="speakExtendedRequest">
+    <part name="accountID" type="xsd:string" />
+    <part name="password" type="xsd:string" />
+    <part name="voice" type="xsd:string" />
+    <part name="text" type="xsd:string" />
+    <part name="contentType" type="xsd:string" />
+    <part name="sampleRate" type="xsd:int" />
+    <part name="audio3D" type="xsd:boolean" />
+    <part name="metadata" type="xsd:boolean" />
+  </message>
+  <message name="speakExtendedResponse">
+    <part name="fileUrl" type="xsd:string" />
+    <part name="charCount" type="xsd:int" />
+    <part name="resultCode" type="xsd:int" />
+    <part name="resultDescription" type="xsd:string" />
+    <part name="metadataUrl" type="xsd:string" />
+  </message>
+  
+  <!-- LIST VOICE -->
+  <message name="listVoicesRequest">
+    <part name="accountID" type="xsd:string" />
+    <part name="password" type="xsd:string" />
+  </message>
+  <message name="listVoicesResponse">
+    <part name="voicesList" type="types:listVoices" />
+  </message>
+
+  <!-- LIST LEX -->
+  <message name="listLexiconsRequest">
+    <part name="accountID" type="xsd:string" />
+    <part name="password" type="xsd:string" />
+  </message>
+  <message name="listLexiconsResponse">
+    <part name="lexiconList" type="types:listLexicons" />
+  </message>
+  
+  <!-- LIST ABB -->
+  <message name="listAbbreviationsRequest">
+    <part name="accountID" type="xsd:string" />
+    <part name="password" type="xsd:string" />
+  </message>
+  <message name="listAbbreviationsResponse">
+    <part name="abbreviationList" type="types:listAbbreviations" />
+  </message>
+  
+  <!-- LIST AUDIO FORMAT -->
+  <message name="listAudioFormatsRequest">
+    <part name="accountID" type="xsd:string" />
+    <part name="password" type="xsd:string" />
+  </message>
+  <message name="listAudioFormatsResponse">
+    <part name="formatList" type="types:listAudioFormats" />
+  </message>
+  
+  <!-- GET CREDIT -->
+  <message name="getCreditRequest">
+    <part name="accountID" type="xsd:string" />
+    <part name="password" type="xsd:string" />
+  </message>
+  <message name="getCreditResponse">
+    <part name="getcredit" type="types:GetCredit" />
+  </message>
+
+  <!-- GET LICENSE -->
+  <!-- <message name="getLicenseRequest"> -->
+  <!-- <part name="accountID" type="xsd:string"/> -->
+  <!-- <part name="password" type="xsd:string"/> -->
+  <!-- </message> -->
+  <!-- <message name="getLicenseResponse"> -->
+  <!-- <part name="license" type="xsd:licenseList"/> -->
+  <!-- </message> -->
+  
+  <!-- UPLOAD LEXICON -->
+  <message name="uploadLexiconRequest">
+    <part name="accountID" type="xsd:string" />
+    <part name="password" type="xsd:string" />
+    <part name="lexiconFile" type="xsd:string" />
+    <part name="language" type="xsd:string" />
+    <part name="accent" type="xsd:string" />
+  </message>
+  <message name="uploadLexiconResponse">
+    <part name="resultCode" type="xsd:int" />
+    <part name="resultDescription" type="xsd:string" />
+  </message>
+  
+  <!-- UPLOAD ABBREVIATIONS -->
+  <message name="uploadAbbreviationsRequest">
+    <part name="accountID" type="xsd:string" />
+    <part name="password" type="xsd:string" />
+    <part name="abbreviationFile" type="xsd:string" />
+    <part name="language" type="xsd:string" />
+  </message>
+  <message name="uploadAbbreviationsResponse">
+    <part name="resultCode" type="xsd:int" />
+    <part name="resultDescription" type="xsd:string" />
+  </message>
+  
+  <!-- portType connects binding block to the message block which defines 
+       function param and rtrn type -->
+  <!-- when adding a function to server, a corresponding operation section 
+       is needed -->
+  <portType name="CereVoiceCloudPortType">
+    
+    <operation name="speakSimple">
+      <input message="tns:speakSimpleRequest" />
+      <output message="tns:speakSimpleResponse" />
+    </operation>
+    
+    <operation name="speakExtended">
+      <input message="tns:speakExtendedRequest" />
+      <output message="tns:speakExtendedResponse" />
+    </operation>
+    
+    <operation name="listVoices">
+      <input message="tns:listVoicesRequest" />
+      <output message="tns:listVoicesResponse" />
+    </operation>
+    
+    <operation name="listLexicons">
+      <input message="tns:listLexiconsRequest" />
+      <output message="tns:listLexiconsResponse" />
+    </operation>
+    
+    <operation name="listAbbreviations">
+      <input message="tns:listAbbreviationsRequest" />
+      <output message="tns:listAbbreviationsResponse" />
+    </operation>
+    
+    <operation name="listAudioFormats">
+      <input message="tns:listAudioFormatsRequest" />
+      <output message="tns:listAudioFormatsResponse" />
+    </operation>
+    
+    <operation name="getCredit">
+      <input message="tns:getCreditRequest" />
+      <output message="tns:getCreditResponse" />
+    </operation>
+    
+    <!-- <operation name="getLicense"> -->
+    <!-- <input message="tns:getLicenseRequest"/> -->
+    <!-- <output message="tns:getLicenseResponse"/> -->
+    <!-- </operation> -->
+    
+    <operation name="uploadLexicon">
+      <input message="tns:uploadLexiconRequest" />
+      <output message="tns:uploadLexiconResponse" />
+    </operation>
+    
+    <operation name="uploadAbbreviations">
+      <input message="tns:uploadAbbreviationsRequest" />
+      <output message="tns:uploadAbbreviationsResponse" />
+    </operation>
+    
+  </portType>
+  
+  
+  <!-- binding defines how soap client and server communicate -->
+  <!-- when adding a function to server, a corresponding operation section 
+       is needed -->
+  <binding name="CereVoiceCloudBinding" type="tns:CereVoiceCloudPortType" >
+    <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    
+    <operation name="speakSimple">
+      <soap:operation soapAction="#speakSimple" />
+      <input>
+	<soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+	<soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    
+    <operation name="speakExtended">
+      <soap:operation soapAction="#speakExtended" />
+      <input>
+	<soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+	<soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    
+    <operation name="listVoices">
+      <soap:operation soapAction="#listVoices" />
+      <input>
+	<soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+	<soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    
+    <operation name="listLexicons">
+      <soap:operation soapAction="#listLexicons" />
+      <input>
+	<soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+	<soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    
+    <operation name="listAbbreviations">
+      <soap:operation soapAction="#listAbbreviations" />
+      <input>
+	<soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+	<soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+
+    <operation name="listAudioFormats">
+      <soap:operation soapAction="#listAudioFormats" />
+      <input>
+	<soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+	<soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    
+    <operation name="getCredit">
+      <soap:operation soapAction="#getCredit" />
+      <input>
+	<soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+	<soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    
+    <!-- <operation name="getLicense"> -->
+    <!-- <soap:operation soapAction="#getLicense"/> -->
+    <!-- <input><soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input> -->
+    <!-- <output><soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output> -->
+    <!-- </operation> -->
+    
+    <operation name="uploadLexicon">
+      <soap:operation soapAction="#uploadLexicon" />
+      <input>
+	<soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+	<soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    
+    <operation name="uploadAbbreviations">
+      <soap:operation soapAction="#uploadAbbreviations" />
+      <input>
+	<soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </input>
+      <output>
+	<soap:body use="literal" namespace="http://cerevoice.com/soap/cloudservice" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
+      </output>
+    </operation>
+    
+  </binding>
+  
+  <!-- service gives basic definitions to server. -->
+  <!-- port and binding connect this block with other parts of the wsdl -->
+  <!-- the code at location, handles all xml msgs and passes the right params 
+       to funcs -->
+  <!-- If the server is moved, this needs to be changed -->
+  <service name="CereVoiceCloud">
+    <!--<port name="CereVoiceCloudPort" binding="CereVoiceCloudBinding"> -->
+    <port name="CereVoiceCloudPort" binding="tns:CereVoiceCloudBinding">
+    <soap:address
+	 location="https://cerevoice.com/soap/soap_1_1.php" />
+      <!--<soap:address location="http://127.0.0.1:18180/soap/soap_1_1.php"/> -->
+    </port>
+  </service>
+</definitions>

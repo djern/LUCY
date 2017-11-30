@@ -6,6 +6,7 @@ public class ControllerHW {
 	MicroHandler handlerMicro;
 	
 	public ControllerHW() throws IOException {
+		System.out.println("Creating MicroHandler");
 		handlerMicro = new MicroHandler();
 	}
 	
@@ -32,5 +33,4 @@ public class ControllerHW {
 			e.printStackTrace();
 		}
 	}
-
 }

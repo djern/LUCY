@@ -12,9 +12,9 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 
+import app.com.voice.SpeechDetector;
 import app.com.voice.VoiceToText;
-import be.tarsos.dsp.io.TarsosDSPAudioFloatConverter;
-import be.tarsos.dsp.io.TarsosDSPAudioFormat;
+import app.gui.Config;
 
 public class MicroHandler {
 
@@ -24,7 +24,6 @@ public class MicroHandler {
 	Path file_save;
 	Path file_toText;
 	Runnable recorder;
-	double threshold = -71;
 	boolean microActive;
 	boolean speaking = false;
 	boolean speaking_before = false;
@@ -38,13 +37,16 @@ public class MicroHandler {
 	AudioFormat.Encoding encoding = AudioFormat.Encoding.PCM_SIGNED;
 	
 	public MicroHandler() throws IOException {
+		System.out.println("Creating SpeechDetector");
+		speechDetector = new SpeechDetector();
+		System.out.println("Creating VoiceToText");
+		translator = new VoiceToText();
+		
 		format = new AudioFormat(16000, 16, 1, true, false);
 		targetInfo = new DataLine.Info(TargetDataLine.class, format);
 		sourceInfo = new DataLine.Info(SourceDataLine.class, format);
-		file_save = Paths.get("./resources/micro_save.pcm");
-		file_toText = Paths.get("./resources/toText.pcm");
-		speechDetector = new SpeechDetector(threshold);
-		translator = new VoiceToText();
+		file_save = Paths.get(Config.MICRO_AUDIO_SAVE);
+		file_toText = Paths.get(Config.MICRO_AUDIO_TOTEXT);
 
 		try {
 			targetLine = (TargetDataLine) AudioSystem.getLine(targetInfo);
@@ -80,8 +82,8 @@ public class MicroHandler {
 						else if(speaking == false && speaking_before == true) {
 							Files.copy(file_save, file_toText, StandardCopyOption.REPLACE_EXISTING);
 							Files.write(file_save, new byte[0]);
-							System.out.println("DETECTED: End of Sentence (" + speechDetector.getDurationInSec() + ")");
-							if(speechDetector.getDurationInSec() > 1.20)
+//							System.out.println("DETECTED: End of Sentence (" + speechDetector.getDurationInSec() + ")");
+							if(speechDetector.getDurationInSec() > Config.SPEECH_SENTENCE_DURATION)
 								translator.translate("./resources/toText.pcm");
 						}		
 					} catch (Exception e) {
